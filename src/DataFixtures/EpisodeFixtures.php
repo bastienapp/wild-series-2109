@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Episode;
+use App\Service\Slugify;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -16,16 +17,24 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
         'Why on earth would you wear a tie like that?',
     ];
 
+    private Slugify $slugify;
+
+    public function __construct(Slugify $slugify)
+    {
+        $this->slugify = $slugify;
+    }
+
     public function load(ObjectManager $manager)
     {
         foreach (ProgramFixtures::PROGRAMS as $key => $programInfos) {
             foreach (SeasonFixtures::SEASONS as $n => $seasonDescription) {
                 foreach (self::EPISODES as $i => $episodeName) {
                     $episode = new Episode();
-                    $episode->setTitle($episodeName);
+                    $episode->setTitle($key . '-' . $n . ' ' . $episodeName);
                     $episode->setSynopsis('Always program as if the person who will maintain your code is a maniac serial killer who knows where you live.');
                     $episode->setNumber($i + 1);
                     $episode->setSeason($this->getReference('season_' . $key . '_' . $n));
+                    $episode->setSlug($this->slugify->generate($key . '-' . $n . ' ' . $episodeName));
                     $manager->persist($episode);
                     $this->addReference('episode_' . $key . '_' . $n . '_' . $i, $episode);
                 }

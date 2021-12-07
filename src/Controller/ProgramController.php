@@ -70,7 +70,7 @@ class ProgramController extends AbstractController
     /**
      * Getting a program by id
      *
-     * @Route("/show/{id}", requirements={"id"="\d+"}, name="show")
+     * @Route("/show/{slug}", name="show")
      * @return Response
      */
     public function show(Program $program):Response
