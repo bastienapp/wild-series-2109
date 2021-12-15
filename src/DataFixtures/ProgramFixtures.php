@@ -57,6 +57,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager)
     {
+        $user = $this->getReference('user_tacos');
         foreach (SELF::PROGRAMS as $key => $programInfos) {
             $program = new Program();
             $program->setTitle($programInfos['title']);
@@ -68,6 +69,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
             for ($i=0; $i < count(ActorFixtures::ACTORS); $i++) {
                 $program->addActor($this->getReference('actor_' . $i));
             }
+            $program->setOwner($user);
             $manager->persist($program);
             $this->addReference('program_' . $key, $program);
         }
@@ -79,6 +81,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         return [
             CategoryFixtures::class,
             ActorFixtures::class,
+            UserFixtures::class,
         ];
     }
 }

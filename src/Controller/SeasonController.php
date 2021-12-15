@@ -11,18 +11,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/season')]
+/** @Route("/season") */
 class SeasonController extends AbstractController
 {
-    #[Route('/', name: 'season_index', methods: ['GET'])]
+    /** @Route("/", name="season_index", methods={"GET"}) */
     public function index(SeasonRepository $seasonRepository): Response
     {
-        return $this->render('season/index.html.twig', [
-            'seasons' => $seasonRepository->findAll(),
+        return $this->render("season/index.html.twig", [
+            "seasons" => $seasonRepository->findAll(),
         ]);
     }
 
-    #[Route('/new', name: 'season_new', methods: ['GET', 'POST'])]
+    /** @Route("/new", name="season_new", methods={"GET", "POST"}) */
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $season = new Season();
@@ -33,24 +33,24 @@ class SeasonController extends AbstractController
             $entityManager->persist($season);
             $entityManager->flush();
 
-            return $this->redirectToRoute('season_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute("season_index", [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('season/new.html.twig', [
-            'season' => $season,
-            'form' => $form,
+        return $this->renderForm("season/new.html.twig", [
+            "season" => $season,
+            "form" => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'season_show', methods: ['GET'])]
+    /** @Route("/{id}", name="season_show", methods={"GET"}) */
     public function show(Season $season): Response
     {
-        return $this->render('season/show.html.twig', [
-            'season' => $season,
+        return $this->render("season/show.html.twig", [
+            "season" => $season,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'season_edit', methods: ['GET', 'POST'])]
+    /** @Route("/{id}/edit", name="season_edit", methods={"GET", "POST"}) */
     public function edit(Request $request, Season $season, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(SeasonType::class, $season);
@@ -59,23 +59,23 @@ class SeasonController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('season_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute("season_index", [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('season/edit.html.twig', [
-            'season' => $season,
-            'form' => $form,
+        return $this->renderForm("season/edit.html.twig", [
+            "season" => $season,
+            "form" => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'season_delete', methods: ['POST'])]
+    /** @Route("/{id}", name="season_delete", methods={"POST"}) */
     public function delete(Request $request, Season $season, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$season->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid("delete".$season->getId(), $request->request->get("_token"))) {
             $entityManager->remove($season);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('season_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute("season_index", [], Response::HTTP_SEE_OTHER);
     }
 }

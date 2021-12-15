@@ -10,6 +10,10 @@
             <p>{{ program.synopsis }}</p>
             {# Lien vers la fiche de la série : #}
             <a href="{{ path("program_show", { slug: program.slug }) }}">Voir la fiche</a>
+            <a href="{{ path("program_edit", { slug: program.slug }) }}">Éditer</a>
+            {% if is_granted("ROLE_ADMIN") %}
+                <a href="{{ path('program_edit', { 'slug': program.slug} ) }}">Admin édition</a>
+            {%endif%}
         </div>
     {% else %}
         Aucune série trouvée.

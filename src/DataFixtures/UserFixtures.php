@@ -30,6 +30,20 @@ class UserFixtures extends Fixture
 
         $contributor->setPassword($hashedPassword);
         $manager->persist($contributor);
+        $this->setReference('user_contributor', $contributor);
+
+        // Création d’un utilisateur de type “tacos”
+        $tacos = new User();
+        $tacos->setEmail('tacos@test.com');
+        $tacos->setRoles(['ROLE_CONTRIBUTOR']);
+        $hashedPassword = $this->passwordHasher->hashPassword(
+            $tacos,
+            'tacostacos'
+        );
+
+        $tacos->setPassword($hashedPassword);
+        $manager->persist($tacos);
+        $this->setReference('user_tacos', $tacos);
 
         // Création d’un utilisateur de type “administrateur”
         $admin = new User();
@@ -41,6 +55,7 @@ class UserFixtures extends Fixture
         );
         $admin->setPassword($hashedPassword);
         $manager->persist($admin);
+        $this->setReference('user_admin', $admin);
 
         // Sauvegarde des 2 nouveaux utilisateurs :
         $manager->flush();
