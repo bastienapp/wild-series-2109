@@ -10,6 +10,7 @@ use App\Repository\EpisodeRepository;
 use App\Service\Slugify;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -95,5 +96,23 @@ class EpisodeController extends AbstractController
         }
 
         return $this->redirectToRoute("episode_index", [], Response::HTTP_SEE_OTHER);
+    }
+
+    /** @Route("/comment/{id}", name="episode_comment_delete", methods={"POST"}) */
+    public function deleteComment(Request $request, Comment $comment, EntityManagerInterface $entityManager): Response
+    {
+        // Check wether the logged in user is the owner of the program
+        if ($this->getUser() !== $comment->getAuthor() && !in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            // If not the owner, throws a 403 Access Denied exception
+            throw new AccessDeniedException('Only the owner can delete the comment!');
+        }
+        $episode = $comment->getEpisode();
+        $slug = $episode->getSlug();
+        if ($this->isCsrfTokenValid("delete" . $comment->getId(), $request->request->get("_token"))) {
+            $entityManager->remove($comment);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute("episode_show", ['slug' => $slug], Response::HTTP_SEE_OTHER);
     }
 }

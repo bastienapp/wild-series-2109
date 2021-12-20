@@ -37,12 +37,16 @@
             <li>
                 <h5>{{comment.author.email}}</h5>
                 <p>{{comment.comment}}</p>
-                <strong>{{comment.rate}}</strong>
+                <strong>{{comment.rate}} / 5</strong>
+                <br>
+                {% if is_granted("ROLE_ADMIN") or app.user == comment.author %}
+                    {{ include('episode/_delete_comment_form.html.twig') }}
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
 
-    {% if app.user %}
+    {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_CONTRIBUTOR") %}
         {{ form_start(form) }}
         {{ form_widget(form) }}
         <button class="btn">{{ button_label|default('Save') }}</button>
